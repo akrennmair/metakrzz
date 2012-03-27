@@ -1,0 +1,7 @@
+mod_gzip_on yes
+AddOutputFilterByType DEFLATE text/html text/css text/plain
+ExpiresDefault "access plus 2 weeks"
+ExpiresActive On
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/(files/|favicon|cgi-bin)
+RewriteRule ^(.*)$ /cgi-bin/metakrzz.pl/$1 [QSA,PT,L]
