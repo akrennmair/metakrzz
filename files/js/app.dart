@@ -1,12 +1,113 @@
 #import('dart:html');
 #import('dart:json');
 
-class UI {
-
+class Shortener {
+	Controller ctrl;
 	var shorteners;
-	
-	UI() {
+
+	Shortener() {
+		this.ctrl = null;
 		this.shorteners = [ 'googl', 'tinyurl' ];
+	}
+
+	void set controller(Controller c) {
+		this.ctrl = c;
+	}
+
+	void shorten(String url) {
+		this.shorteners.forEach((id) {
+			ShortenerRequest req = new ShortenerRequest(this.ctrl, id, url);
+			req.run();
+		});
+	}
+
+	int getShortenerCount() {
+		return this.shorteners.length;
+	}
+}
+
+class ShortenerRequest {
+	String id;
+	String url;
+	Controller ctrl;
+
+	ShortenerRequest(Controller c, String i, String u) {
+		this.ctrl = c;
+		this.id = i;
+		this.url = u;
+	}
+
+	void run() {
+		XMLHttpRequest xhr = new XMLHttpRequest();
+		xhr.open("GET", "/shorten/" + this.id + "?url=" + this.url, true);
+
+		xhr.on.load.add((event) {
+			print("got load for $id");
+			if (xhr.status != 200) {
+				print("error: " + xhr.responseText);
+				this.ctrl.showError("shortener returned " + xhr.status);
+				return;
+			}
+			Map<String, Object> msg = JSON.parse(xhr.responseText);
+			if (msg["error"] != null) {
+				this.ctrl.showError(msg["error"]);
+				print(msg["error"]);
+			} else {
+				this.ctrl.addShortURL(msg["url"]);
+			}
+		});
+
+		xhr.send();
+	}
+}
+
+class Controller {
+	UI ui_;
+	Shortener sh;
+
+	Controller() {
+		this.ui = null;
+		this.sh = null;
+	}
+
+	void set ui(UI u) {
+		this.ui_ = u;
+	}
+
+	void set shortener(Shortener s) {
+		this.sh = s;
+	}
+
+	void shorten(String url) {
+		this.sh.shorten(url);
+	}
+
+	int getShortenerCount() {
+		return this.sh.getShortenerCount();
+	}
+
+	void addShortURL(String url) {
+		this.ui_.addShortURL(url);
+	}
+
+	void showError(String err) {
+		this.ui_.showError(err);
+	}
+}
+
+class UI {
+	Controller ctrl;
+	int total_results;
+	int received_results;
+
+	UI() {
+		this.ctrl = null;
+		this.total_results = 0;
+		this.received_results = 0;
+	}
+
+	void set controller(Controller c) {
+		this.ctrl = c;
 	}
 
 	void showError(String msg) {
@@ -19,68 +120,64 @@ class UI {
 	void buttonClicked() {
 		InputElement url_input = document.query('#url');
 		if (!url_input.checkValidity()) {
-			showError("Invalid URL");
+			this.showError("Invalid URL");
 			return;
 		}
 
-		int results_open = shorteners.length;
+		this.total_results = this.ctrl.getShortenerCount();
+		this.received_results = 0;
+
 		document.query('#recvmsg').style.display = "inline";
 		print("activated recvmsg");
 
 		TableElement tbl = document.query('#urltbl');
 		tbl.style.display = "inline";
 		print("showing urltbl");
-		// TODO: empty table beforehand
+
+		// clear table:
+		for (int i=tbl.rows.length-1;i>0;i--) {
+			tbl.deleteRow(i);
+		}
 
 		String url = url_input.value;
 
-		shorteners.forEach((id) {
-			print("id = $id");
-			XMLHttpRequest xhr = new XMLHttpRequest();
-			xhr.open("GET", "/shorten/" + id + "?url=" + url, true);
+		this.ctrl.shorten(url);
+	}
 
-			xhr.on.load.add((event) {
-				print("got load for $id");
-				if (xhr.status != 200) {
-					print("error: " + xhr.responseText);
-					showError("shortener returned " + xhr.status);
-					return;
-				}
-				Map<String, Object> msg = JSON.parse(xhr.responseText);
-				if (msg["error"] != null) {
-					showError(msg["error"]);
-					print(msg["error"]);
-				} else {
-					String url = msg["url"];
+	void addShortURL(String url) {
+		TableElement tbl = document.query('#urltbl');
 
-					TableRowElement new_row = tbl.insertRow(tbl.rows.length);
+		TableRowElement new_row = tbl.insertRow(tbl.rows.length);
 
-					TableCellElement urlfield = new Element.html('<td><a href="${url}">${url}</a></td>');
-					new_row.nodes.add(urlfield);
+		TableCellElement urlfield = new Element.html('<td><a href="${url}">${url}</a></td>');
+		new_row.nodes.add(urlfield);
 
-					TableCellElement lenfield = new Element.tag('td');
-					lenfield.text = '${url.length} characters';
-					new_row.nodes.add(lenfield);
+		TableCellElement lenfield = new Element.tag('td');
+		lenfield.text = '${url.length} characters';
+		new_row.nodes.add(lenfield);
 
-					results_open--;
+		this.received_results++;
 
-					print("results_open = $results_open");
+		print("received_results = ${this.received_results}");
 
-					if (results_open == 0) {
-						document.query('#recvmsg').style.display = "none";
-						print("deactviated recvmsg");
-					}
-				}
-			});
-
-			xhr.send();
-			print("sent request for $id");
-		});
+		if (this.received_results == this.total_results) {
+			document.query('#recvmsg').style.display = "none";
+			print("deactviated recvmsg");
+		}
 	}
 }
 
 void main() {
 	UI ui = new UI();
+	Controller ctrl = new Controller();
+	Shortener sh = new Shortener();
+
+	ui.controller = ctrl;
+	sh.controller = ctrl;
+
+	ctrl.ui = ui;
+	ctrl.shortener = sh;
+
 	window.on.contentLoaded.add( (e) {
 			document.query('#btn').on.click.add( (event) {
 				event.preventDefault();
