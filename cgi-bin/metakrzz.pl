@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use lib 'lib';
 use MeToo;
+use LWP::UserAgent;
+use URI::Escape;
+use JSON;
 
 my $html = <<END;
 <!DOCTYPE html>
@@ -46,15 +49,41 @@ my $html = <<END;
 </html>
 END
 
+sub shorten_krzz {
+	my ($ua, $url) = @_;
+	my $resp = $ua->get('http://krzz.de/_api/save?url=' . uri_escape($url));
+	if ($resp->is_success) {
+		my $content = $resp->decoded_content;
+		chomp($content);
+		if ($content =~ /^http:\/\/krzz\.de\//) {
+			return { "url" => $content };
+		}
+		return { "error" => $content };
+	}
+	return { "error" => $resp->status_line };
+}
+
+my %shortener = (
+	'krzz' => \&shorten_krzz,
+);
+
 get '/' => sub {
-	# TODO: replace with static HTML page.
 	return $html;
 };
 
 get '/shorten/(.*)' => sub {
 	my $id = shift;
+	my $url = params->{url};
 	content_type("application/json");
-	# TODO: implement shortening
-	return "{ \"url\": \"http://foobar.com/$id\" }";
+	my $shorten_func = $shortener{$id};
+	if ($shorten_func) {
+		my $ua = LWP::UserAgent->new;
+		$ua->agent('meta.krzz.de Meta URL Shortener');
+		$ua->timeout(10);
+		my $result = &$shorten_func($ua, $url);
+		my $json = JSON->new;
+		return $json->objToJson($result);
+	}
+	return "{ \"error\": \"unsupported shortener\" }";
 };
 

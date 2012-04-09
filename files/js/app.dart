@@ -7,7 +7,7 @@ class Shortener {
 
 	Shortener() {
 		this.ctrl = null;
-		this.shorteners = [ 'googl', 'tinyurl' ];
+		this.shorteners = [ 'krzz' ]; // add more shorteners here
 	}
 
 	void set controller(Controller c) {
@@ -31,11 +31,7 @@ class ShortenerRequest {
 	String url;
 	Controller ctrl;
 
-	ShortenerRequest(Controller c, String i, String u) {
-		this.ctrl = c;
-		this.id = i;
-		this.url = u;
-	}
+	ShortenerRequest(this.ctrl, this.id, this.url);
 
 	void run() {
 		XMLHttpRequest xhr = new XMLHttpRequest();
@@ -66,7 +62,7 @@ class Controller {
 	Shortener sh;
 
 	Controller() {
-		this.ui = null;
+		this.ui_ = null;
 		this.sh = null;
 	}
 
