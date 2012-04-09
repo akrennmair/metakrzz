@@ -8,6 +8,22 @@ use LWP::UserAgent;
 use URI::Escape;
 use JSON;
 
+
+sub read_config() {
+	my %config;
+	my $fh;
+	if (open($fh, '<', 'config.txt')) {
+		while (my $line = <$fh>) {
+			chomp($line);
+			my ($key, $value) = split(/ /, $line, 2);
+			print STDERR "$key = $value\n";
+			$config{$key} = $value;
+		}
+		close($fh);
+	}
+	return \%config;
+}
+
 my $html = <<END;
 <!DOCTYPE html>
 <html lang="en">
@@ -74,6 +90,37 @@ sub shorten_tinyurl {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_isgd {
+	my ($ua, $url) = @_;
+	my $resp = $ua->get('http://is.gd/create.php?format=simple&url=' . uri_escape($url));
+	if ($resp->is_success) {
+		my $content = $resp->decoded_content;
+		chomp($content);
+		return { "url" => $content };
+	}
+	return { "error" => $resp->status_line };
+}
+
+sub _shorten_bitly {
+	my ($ua, $url, $domain) = @_;
+	my $config = read_config();
+	my $resp = $ua->get('http://api.bitly.com/v3/shorten?format=txt&longUrl=' . uri_escape($url) . "&domain=$domain&login=$config->{bitly_login}&apiKey=$config->{bitly_apikey}");
+	if ($resp->is_success) {
+		my $content = $resp->decoded_content;
+		chomp($content);
+		return { "url" => $content };
+	}
+	return { "error" => $resp->status_line };
+}
+
+sub shorten_bitly {
+	return _shorten_bitly(@_, 'bit.ly');
+}
+
+sub shorten_jmp {
+	return _shorten_bitly(@_, 'j.mp');
+}
+
 sub shorten_googl {
 	my ($ua, $url) = @_;
 	my $json = JSON->new;
@@ -93,6 +140,9 @@ my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
 	'tinyurl' => \&shorten_tinyurl,
+	'isgd' => \&shorten_isgd,
+	'bitly' => \&shorten_bitly,
+	'jmp' => \&shorten_jmp,
 );
 
 get '/' => sub {
