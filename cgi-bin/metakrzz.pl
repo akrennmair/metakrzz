@@ -63,8 +63,36 @@ sub shorten_krzz {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_tinyurl {
+	my ($ua, $url) = @_;
+	my $resp = $ua->get('http://tinyurl.com/api-create.php?url=' . uri_escape($url));
+	if ($resp->is_success) {
+		my $content = $resp->decoded_content;
+		chomp($content);
+		return { "url" => $content };
+	}
+	return { "error" => $resp->status_line };
+}
+
+sub shorten_googl {
+	my ($ua, $url) = @_;
+	my $json = JSON->new;
+	my $resp = $ua->post('https://www.googleapis.com/urlshortener/v1/url', Content_Type => "application/json", Content => $json->encode({ longUrl => $url }));
+	if ($resp->is_success) {
+		my $result = $json->decode($resp->decoded_content);
+		my $short_url = $result->{id};
+		if ($short_url) {
+			return { "url" => $short_url };
+		}
+		return { "error" => $result->{error}{message} };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
+	'googl' => \&shorten_googl,
+	'tinyurl' => \&shorten_tinyurl,
 );
 
 get '/' => sub {
@@ -82,7 +110,7 @@ get '/shorten/(.*)' => sub {
 		$ua->timeout(10);
 		my $result = &$shorten_func($ua, $url);
 		my $json = JSON->new;
-		return $json->objToJson($result);
+		return $json->encode($result);
 	}
 	return "{ \"error\": \"unsupported shortener\" }";
 };
