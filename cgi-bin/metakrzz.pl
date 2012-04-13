@@ -136,6 +136,26 @@ sub shorten_googl {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_b23ru {
+	my ($ua, $url) = @_;
+	my $config = read_config();
+
+	$url =~ s/%/%25/g;
+	$url =~ s/\?/%3F/g;
+	$url =~ s/#/%23/g;
+	$url =~ s/&/%26/g;
+
+	my $complete_url = "http://$config->{b23ru_login}:$config->{b23ru_apikey}\@b23.ru/api/shorten/$url";
+
+	my $resp = $ua->get($complete_url);
+
+	if ($resp->is_success) {
+		my $short_url = $resp->decoded_content;
+		return { "url" => $short_url };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -143,6 +163,7 @@ my %shortener = (
 	'isgd' => \&shorten_isgd,
 	'bitly' => \&shorten_bitly,
 	'jmp' => \&shorten_jmp,
+	'b23ru' => \&shorten_b23ru,
 );
 
 get '/' => sub {
