@@ -141,6 +141,11 @@ sub shorten_ipirat {
 	return _shorten_text($ua, 'http://ipir.at/yourls-api.php?action=shorturl&format=txt&url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_yepit {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://yep.it/api.php?url=<url>', { url => uri_escape($url) });
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -153,6 +158,7 @@ my %shortener = (
 	'kortanu' => \&shorten_kortanu,
 	'redirec' => \&shorten_redirec,
 	'ipirat' => \&shorten_ipirat,
+	'yepit' => \&shorten_yepit,
 );
 
 get '/' => sub {
