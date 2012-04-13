@@ -3,8 +3,8 @@
 		<div class="container">
 			<a class="brand" href="/">meta.krzz.de</a>
 			<ul class="nav">
-				<li<% IF active == 'home' %> class="active"<% END %>><a href="/">Home</a></li>
-				<li<% IF active == 'contact' %> class="active"<% END %>><a href="/contact">Contact / Impressum</a></li>
+				<li<% IF active == 'home' %> class="active"<% END %>><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
+				<li<% IF active == 'contact' %> class="active"<% END %>><a href="/contact"><i class="icon-info-sign icon-white"></i>Contact / Impressum</a></li>
 			</ul>
 		</div>
 	</div>
