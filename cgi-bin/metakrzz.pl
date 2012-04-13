@@ -30,52 +30,43 @@ my $t = Template->new({
 		RELATIVE => 1,
 });
 
-sub shorten_krzz {
-	my ($ua, $url) = @_;
-	my $resp = $ua->get('http://krzz.de/_api/save?url=' . uri_escape($url));
+sub _shorten_text {
+	my ($ua, $urltmpl, $vars) = @_;
+	my $shorten_url = $urltmpl;
+	foreach my $k (keys %$vars) {
+		my $v = $vars->{$k};
+		$shorten_url =~ s/<$k>/$v/g;
+	}
+	#print STDERR "_shorten_text: requesting $shorten_url\n";
+	my $resp = $ua->get($shorten_url);
 	if ($resp->is_success) {
 		my $content = $resp->decoded_content;
 		chomp($content);
-		if ($content =~ /^http:\/\/krzz\.de\//) {
-			return { "url" => $content };
-		}
-		return { "error" => $content };
+		return { "url" => $content };
 	}
-	return { "error" => $resp->status_line };
+	return { "error" => $resp->status_line, "long_error" => $resp->decoded_content };
+}
+
+sub shorten_krzz {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://krzz.de/_api/save?url=<url>', { url => uri_escape($url) });
 }
 
 sub shorten_tinyurl {
 	my ($ua, $url) = @_;
-	my $resp = $ua->get('http://tinyurl.com/api-create.php?url=' . uri_escape($url));
-	if ($resp->is_success) {
-		my $content = $resp->decoded_content;
-		chomp($content);
-		return { "url" => $content };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://tinyurl.com/api-create.php?url=<url>', { url => uri_escape($url) });
 }
 
 sub shorten_isgd {
 	my ($ua, $url) = @_;
-	my $resp = $ua->get('http://is.gd/create.php?format=simple&url=' . uri_escape($url));
-	if ($resp->is_success) {
-		my $content = $resp->decoded_content;
-		chomp($content);
-		return { "url" => $content };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://is.gd/create.php?format=simple&url=<url>', { url => uri_escape($url) });
 }
 
 sub _shorten_bitly {
 	my ($ua, $url, $domain) = @_;
 	my $config = read_config();
-	my $resp = $ua->get('http://api.bitly.com/v3/shorten?format=txt&longUrl=' . uri_escape($url) . "&domain=$domain&login=$config->{bitly_login}&apiKey=$config->{bitly_apikey}");
-	if ($resp->is_success) {
-		my $content = $resp->decoded_content;
-		chomp($content);
-		return { "url" => $content };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://api.bitly.com/v3/shorten?format=txt&longUrl=<url>&domain=<domain>&login=<login>&apiKey=<apikey>', 
+		{ url => uri_escape($url), login => $config->{bitly_login}, apikey => $config->{bitly_apikey}, domain => $domain });
 }
 
 sub shorten_bitly {
@@ -137,35 +128,17 @@ sub shorten_b23ru {
 
 sub shorten_kortanu {
 	my ($ua, $url) = @_;
-
-	my $resp = $ua->get("http://korta.nu/api/api.php?url=" . uri_escape($url));
-	if ($resp->is_success) {
-		my $short_url = $resp->decoded_content;
-		return { "url" => $short_url };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://korta.nu/api/api.php?url=<url>', { url => uri_escape($url) });
 }
 
 sub shorten_redirec {
 	my ($ua, $url) = @_;
-	
-	my $resp = $ua->get("http://redir.ec/_api/rest/redirec/create?url=" . uri_escape($url));
-	if ($resp->is_success) {
-		my $short_url = $resp->decoded_content;
-		return { "url" => $short_url };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://redir.ec/_api/rest/redirec/create?url=<url>', { url => uri_escape($url) });
 }
 
 sub shorten_ipirat {
 	my ($ua, $url) = @_;
-
-	my $resp = $ua->get("http://ipir.at/yourls-api.php?action=shorturl&format=txt&url=" . uri_escape($url));
-	if ($resp->is_success) {
-		my $short_url = $resp->decoded_content;
-		return { "url" => $short_url };
-	}
-	return { "error" => $resp->status_line };
+	return _shorten_text($ua, 'http://ipir.at/yourls-api.php?action=shorturl&format=txt&url=<url>', { url => uri_escape($url) });
 }
 
 my %shortener = (
