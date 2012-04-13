@@ -30,6 +30,12 @@ my $html = <<END;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/files/css/bootstrap.min.css">
+<style type="text/css">
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+</style>
 <title>meta.krzz.de</title>
 <script src="/files/js/app.dart.js"></script>
 <!--[if lt IE 9]>
@@ -37,6 +43,17 @@ my $html = <<END;
 <![endif]-->
 </head>
 <body>
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand" href="/">meta.krzz.de</a>
+			<ul class="nav">
+				<li><a href="/">Home</a></li>
+				<li><a href="/contact">Contact / Impressum</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
 <div class="container">
 <h2>meta.krzz.de Meta URL Shortener</h2>
 <div class="row">
