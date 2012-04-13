@@ -39,6 +39,7 @@ class ShortenerRequest {
 
 		xhr.on.load.add((event) {
 			print("got load for $id");
+			this.ctrl.receivedResult();
 			if (xhr.status != 200) {
 				print("error: " + xhr.responseText);
 				this.ctrl.showError("shortener returned " + xhr.status);
@@ -89,6 +90,10 @@ class Controller {
 	void showError(String err) {
 		this.ui_.showError(err);
 	}
+
+	void receivedResult() {
+		this.ui_.receivedResult();
+	}
 }
 
 class UI {
@@ -111,6 +116,15 @@ class UI {
 		errmsg.innerHTML = '<a id="errmsgclose" class="close" data-dismiss="alert">&times;</a><h4>Error:</h4>$msg';
 		errmsg.style.display = "inline";
 		document.query('#errmsgclose').on.click.add( (e) => errmsg.style.display = "none" );
+	}
+
+	void receivedResult() {
+		this.received_results++;
+
+		if (this.received_results == this.total_results) {
+			document.query('#recvmsg').style.display = "none";
+			print("deactivated recvmsg");
+		}
 	}
 
 	void buttonClicked() {
@@ -151,15 +165,6 @@ class UI {
 		TableCellElement lenfield = new Element.tag('td');
 		lenfield.text = '${url.length} characters';
 		new_row.nodes.add(lenfield);
-
-		this.received_results++;
-
-		print("received_results = ${this.received_results}");
-
-		if (this.received_results == this.total_results) {
-			document.query('#recvmsg').style.display = "none";
-			print("deactviated recvmsg");
-		}
 	}
 }
 
