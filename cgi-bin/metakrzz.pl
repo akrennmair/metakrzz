@@ -42,7 +42,11 @@ sub _shorten_text {
 	if ($resp->is_success) {
 		my $content = $resp->decoded_content;
 		chomp($content);
-		return { "url" => $content };
+		$content =~ s/^\s*(.*)\s*$/\1/g;
+		if ($content =~ /^http:\/\//) {
+			return { "url" => $content };
+		}
+		return { "error" => $content };
 	}
 	return { "error" => $resp->status_line, "long_error" => $resp->decoded_content };
 }
@@ -146,6 +150,11 @@ sub shorten_yepit {
 	return _shorten_text($ua, 'http://yep.it/api.php?url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_chilpit {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://chilp.it/api.php?url=<url>', { url => uri_escape($url) });
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -159,6 +168,7 @@ my %shortener = (
 	'redirec' => \&shorten_redirec,
 	'ipirat' => \&shorten_ipirat,
 	'yepit' => \&shorten_yepit,
+	'chilpit' => \&shorten_chilpit,
 );
 
 get '/' => sub {
