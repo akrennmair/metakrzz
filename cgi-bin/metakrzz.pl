@@ -186,6 +186,17 @@ sub shorten_b23ru {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_kortanu {
+	my ($ua, $url) = @_;
+
+	my $resp = $ua->get("http://korta.nu/api/api.php?url=" . uri_escape($url));
+	if ($resp->is_success) {
+		my $short_url = $resp->decoded_content;
+		return { "url" => $short_url };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -195,6 +206,7 @@ my %shortener = (
 	'jmp' => \&shorten_jmp,
 	'b23ru' => \&shorten_b23ru,
 	'cortas' => \&shorten_cortas,
+	'kortanu' => \&shorten_kortanu,
 );
 
 get '/' => sub {
