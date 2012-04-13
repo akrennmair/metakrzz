@@ -155,6 +155,11 @@ sub shorten_chilpit {
 	return _shorten_text($ua, 'http://chilp.it/api.php?url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_migreme {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://migre.me/api.txt?url=<url>', { url => uri_escape($url) });
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -169,6 +174,7 @@ my %shortener = (
 	'ipirat' => \&shorten_ipirat,
 	'yepit' => \&shorten_yepit,
 	'chilpit' => \&shorten_chilpit,
+	'migreme' => \&shorten_migreme,
 );
 
 get '/' => sub {
