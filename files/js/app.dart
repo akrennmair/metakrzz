@@ -7,7 +7,7 @@ class Shortener {
 
 	Shortener() {
 		this.ctrl = null;
-		this.shorteners = [ 'krzz', 'tinyurl', 'isgd', 'bitly', 'jmp', 'b23ru' ]; // add more shorteners here; TODO: add 'googl' as soon as IO::Socket::SSL is available
+		this.shorteners = [ 'krzz', 'tinyurl', 'isgd', 'bitly', 'jmp', 'b23ru', 'cortas' ]; // add more shorteners here; TODO: add 'googl' as soon as IO::Socket::SSL is available
 	}
 
 	void set controller(Controller c) {

@@ -16,7 +16,6 @@ sub read_config() {
 		while (my $line = <$fh>) {
 			chomp($line);
 			my ($key, $value) = split(/ /, $line, 2);
-			print STDERR "$key = $value\n";
 			$config{$key} = $value;
 		}
 		close($fh);
@@ -136,6 +135,20 @@ sub shorten_googl {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_cortas {
+	my ($ua, $url) = @_;
+	my $json = JSON->new;
+	my $resp = $ua->get('http://cortas.elpais.com/encode.pl?u=' . uri_escape($url) . "&r=json");
+	if ($resp->is_success) {
+		my $result = $json->allow_singlequote->decode($resp->decoded_content);
+		if ($result->{status} eq "ok") {
+			return { "url" => $result->{urlCortas} };
+		}
+		return { "error" => $result->{errorLong} };
+	}
+	return { "error" => $resp->status_line };
+}
+
 sub shorten_b23ru {
 	my ($ua, $url) = @_;
 	my $config = read_config();
@@ -164,6 +177,7 @@ my %shortener = (
 	'bitly' => \&shorten_bitly,
 	'jmp' => \&shorten_jmp,
 	'b23ru' => \&shorten_b23ru,
+	'cortas' => \&shorten_cortas,
 );
 
 get '/' => sub {
