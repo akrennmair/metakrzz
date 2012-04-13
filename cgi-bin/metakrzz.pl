@@ -7,7 +7,8 @@ use MeToo;
 use LWP::UserAgent;
 use URI::Escape;
 use JSON;
-
+use Cwd;
+use Template;
 
 sub read_config() {
 	my %config;
@@ -23,63 +24,11 @@ sub read_config() {
 	return \%config;
 }
 
-my $html = <<END;
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/files/css/bootstrap.min.css">
-<style type="text/css">
-body {
-	padding-top: 60px;
-	padding-bottom: 40px;
-}
-</style>
-<title>meta.krzz.de</title>
-<script src="/files/js/app.dart.js"></script>
-<!--[if lt IE 9]>
-<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-</head>
-<body>
-<div class="navbar navbar-fixed-top">
-	<div class="navbar-inner">
-		<div class="container">
-			<a class="brand" href="/">meta.krzz.de</a>
-			<ul class="nav">
-				<li><a href="/">Home</a></li>
-				<li><a href="/contact">Contact / Impressum</a></li>
-			</ul>
-		</div>
-	</div>
-</div>
-<div class="container">
-<h2>meta.krzz.de Meta URL Shortener</h2>
-<div class="row">
-	<div class="span12">
-		<form action="" method="post" class="well">
-		<input id=url name=url type=url placeholder="URL, e.g. http://example.com/" required autofocus class="input-medium" style="width: 100%">
-		<button id=btn class="btn btn-primary" type=submit>Shorten</button>
-		<label id="recvmsg" style="display: none">
-			<strong>Receiving results...</strong>
-			<img src="/files/img/indicator.gif">
-		</label>
-		</form>
-	</div>
-</div>
-<div class="row">
-	<div id="errmsgbox" class="alert alert-error span4" style="display: none"></div>
-</div>
-<div class="row">
-	<table class="table table-bordered table-striped table-condensed span12" id="urltbl" style="display: none">
-		<tr><th>URL</th><th>Length</th></tr>
-	</table>
-</div>
-</div>
-</body>
-</html>
-END
+my $t = Template->new({
+		TAG_STYLE => 'asp',
+		INCLUDE_PATH => getcwd . "/tmpl/",
+		RELATIVE => 1,
+});
 
 sub shorten_krzz {
 	my ($ua, $url) = @_;
@@ -234,6 +183,14 @@ my %shortener = (
 );
 
 get '/' => sub {
+	my $html;
+	$t->process("index.tt", { }, \$html) || return $t->error();
+	return $html;
+};
+
+get '/contact' => sub {
+	my $html;
+	$t->process("contact.tt", { }, \$html) || return $t->error();
 	return $html;
 };
 

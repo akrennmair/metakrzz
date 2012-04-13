@@ -1,0 +1,11 @@
+<% INCLUDE header.tt title = "meta.krzz.de | Contact" %>
+<% INCLUDE menu.tt active = 'contact' %>
+<div class="container">
+<h2>Contact / Impressum</h2>
+<p>
+	Andreas Krennmair<br>Erasmusstr. 1<br>10553 Berlin, DE
+</p>
+<p>
+	<a class="btn" href="mailto:admin@krzz.de">Contact by E-Mail</a>
+</p>
+</div>
