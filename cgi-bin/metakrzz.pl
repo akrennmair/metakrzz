@@ -197,6 +197,28 @@ sub shorten_kortanu {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_redirec {
+	my ($ua, $url) = @_;
+	
+	my $resp = $ua->get("http://redir.ec/_api/rest/redirec/create?url=" . uri_escape($url));
+	if ($resp->is_success) {
+		my $short_url = $resp->decoded_content;
+		return { "url" => $short_url };
+	}
+	return { "error" => $resp->status_line };
+}
+
+sub shorten_ipirat {
+	my ($ua, $url) = @_;
+
+	my $resp = $ua->get("http://ipir.at/yourls-api.php?action=shorturl&format=txt&url=" . uri_escape($url));
+	if ($resp->is_success) {
+		my $short_url = $resp->decoded_content;
+		return { "url" => $short_url };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz' => \&shorten_krzz,
 	'googl' => \&shorten_googl,
@@ -207,6 +229,8 @@ my %shortener = (
 	'b23ru' => \&shorten_b23ru,
 	'cortas' => \&shorten_cortas,
 	'kortanu' => \&shorten_kortanu,
+	'redirec' => \&shorten_redirec,
+	'ipirat' => \&shorten_ipirat,
 );
 
 get '/' => sub {
