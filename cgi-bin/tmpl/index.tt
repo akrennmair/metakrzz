@@ -19,7 +19,7 @@
 </div>
 <div class="row">
 	<table class="table table-bordered table-striped table-condensed span12" id="urltbl" style="display: none">
-		<tr><th>URL</th><th>Length</th></tr>
+		<tr><th>Shortener</th><th>URL</th><th>Length</th></tr>
 	</table>
 </div>
 </div>

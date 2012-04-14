@@ -161,20 +161,20 @@ sub shorten_migreme {
 }
 
 my %shortener = (
-	'krzz' => \&shorten_krzz,
-	'googl' => \&shorten_googl,
-	'tinyurl' => \&shorten_tinyurl,
-	'isgd' => \&shorten_isgd,
-	'bitly' => \&shorten_bitly,
-	'jmp' => \&shorten_jmp,
-	'b23ru' => \&shorten_b23ru,
-	'cortas' => \&shorten_cortas,
-	'kortanu' => \&shorten_kortanu,
-	'redirec' => \&shorten_redirec,
-	'ipirat' => \&shorten_ipirat,
-	'yepit' => \&shorten_yepit,
-	'chilpit' => \&shorten_chilpit,
-	'migreme' => \&shorten_migreme,
+	'krzz.de' => \&shorten_krzz,
+	'goo.gl' => \&shorten_googl,
+	'tinyurl.com' => \&shorten_tinyurl,
+	'is.gd' => \&shorten_isgd,
+	'bit.ly' => \&shorten_bitly,
+	'j.mp' => \&shorten_jmp,
+	'b23.ru' => \&shorten_b23ru,
+	'cort.as' => \&shorten_cortas,
+	'korta.nu' => \&shorten_kortanu,
+	'redir.ec' => \&shorten_redirec,
+	'ipir.at' => \&shorten_ipirat,
+	'yep.it' => \&shorten_yepit,
+	'chilp.it' => \&shorten_chilpit,
+	'migre.me' => \&shorten_migreme,
 );
 
 get '/' => sub {

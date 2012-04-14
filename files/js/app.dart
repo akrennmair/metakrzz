@@ -7,8 +7,8 @@ class Shortener {
 
 	Shortener() {
 		this.ctrl = null;
-		// add more shorteners here; TODO: add 'googl' as soon as IO::Socket::SSL is available
-		this.shorteners = [ 'krzz', 'tinyurl', 'isgd', 'bitly', 'jmp', 'b23ru', 'cortas', 'kortanu', 'redirec', 'ipirat', 'yepit', 'chilpit', 'migreme' ];
+		// add more shorteners here; TODO: add 'goo.gl' as soon as IO::Socket::SSL is available
+		this.shorteners = [ 'krzz.de', 'tinyurl.com', 'is.gd', 'bit.ly', 'j.mp', 'b23.ru', 'cort.as', 'korta.nu', 'redir.ec', 'ipir.at', 'yep.it', 'chilp.it', 'migre.me' ];
 	}
 
 	void set controller(Controller c) {
@@ -43,15 +43,15 @@ class ShortenerRequest {
 			this.ctrl.receivedResult();
 			if (xhr.status != 200) {
 				print("error: " + xhr.responseText);
-				this.ctrl.showError("shortener returned " + xhr.status);
+				this.ctrl.showURLError(this.id, "shortener returned " + xhr.status);
 				return;
 			}
 			Map<String, Object> msg = JSON.parse(xhr.responseText);
 			if (msg["error"] != null) {
-				this.ctrl.showError(msg["error"]);
+				this.ctrl.showURLError(this.id, msg["error"]);
 				print(msg["error"]);
 			} else {
-				this.ctrl.addShortURL(msg["url"]);
+				this.ctrl.addShortURL(this.id, msg["url"]);
 			}
 		});
 
@@ -84,12 +84,16 @@ class Controller {
 		return this.sh.getShortenerCount();
 	}
 
-	void addShortURL(String url) {
-		this.ui_.addShortURL(url);
+	void addShortURL(String id, String url) {
+		this.ui_.addShortURL(id, url);
 	}
 
 	void showError(String err) {
 		this.ui_.showError(err);
+	}
+
+	void showURLError(String id, String err) {
+		this.ui_.showURLError(id, err);
 	}
 
 	void receivedResult() {
@@ -155,10 +159,13 @@ class UI {
 		this.ctrl.shorten(url);
 	}
 
-	void addShortURL(String url) {
+	void addShortURL(String id, String url) {
 		TableElement tbl = document.query('#urltbl');
 
 		TableRowElement new_row = tbl.insertRow(tbl.rows.length);
+
+		TableCellElement shortenerfield = new Element.html('<td><a href="http://${id}/">${id}</a></td>');
+		new_row.nodes.add(shortenerfield);
 
 		TableCellElement urlfield = new Element.html('<td><a href="${url}">${url}</a></td>');
 		new_row.nodes.add(urlfield);
@@ -166,6 +173,18 @@ class UI {
 		TableCellElement lenfield = new Element.tag('td');
 		lenfield.text = '${url.length} characters';
 		new_row.nodes.add(lenfield);
+	}
+
+	void showURLError(String id, String error) {
+		TableElement tbl = document.query('#urltbl');
+
+		TableRowElement new_row = tbl.insertRow(tbl.rows.length);
+
+		TableCellElement shortenerfield = new Element.html('<td><a href="http://${id}/">${id}</a></td>');
+		new_row.nodes.add(shortenerfield);
+
+		TableCellElement errorfield = new Element.html('<td class="alert alert-error" colspan="2"><strong>Error:</strong> ${error}</td>');
+		new_row.nodes.add(errorfield);
 	}
 }
 
