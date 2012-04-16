@@ -160,6 +160,18 @@ sub shorten_migreme {
 	return _shorten_text($ua, 'http://migre.me/api.txt?url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_qlnknet {
+	my ($ua, $url) = @_;
+	my $resp = $ua->get('http://qlnk.net/api.php?url=' . uri_escape($url));
+	if ($resp->is_success) {
+		my $content = $resp->decoded_content;
+		chomp($content);
+		$content =~ s/^\s*(.*)\s*$/\1/g;
+		return { "url" => "http://$content/" };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz.de' => \&shorten_krzz,
 	'goo.gl' => \&shorten_googl,
@@ -175,6 +187,7 @@ my %shortener = (
 	'yep.it' => \&shorten_yepit,
 	'chilp.it' => \&shorten_chilpit,
 	'migre.me' => \&shorten_migreme,
+	'qlnk.net' => \&shorten_qlnknet,
 );
 
 get '/' => sub {
