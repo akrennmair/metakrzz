@@ -160,6 +160,16 @@ sub shorten_migreme {
 	return _shorten_text($ua, 'http://migre.me/api.txt?url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_togotous {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://togoto.us/api.php?u=<url>', { url => uri_escape($url) });
+}
+
+sub shorten_urlie {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://url.ie/site/api/tinyurl/create/?url=<url>', { url => uri_escape($url) });
+}
+
 sub shorten_qlnknet {
 	my ($ua, $url) = @_;
 	my $resp = $ua->get('http://qlnk.net/api.php?url=' . uri_escape($url));
@@ -188,6 +198,8 @@ my %shortener = (
 	'chilp.it' => \&shorten_chilpit,
 	'migre.me' => \&shorten_migreme,
 	'qlnk.net' => \&shorten_qlnknet,
+	'togoto.us' => \&shorten_togotous,
+	'url.ie' => \&shorten_urlie,
 );
 
 get '/' => sub {
