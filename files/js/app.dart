@@ -9,7 +9,8 @@ class Shortener {
 		this.ctrl = null;
 		// add more shorteners here; TODO: add 'goo.gl' as soon as IO::Socket::SSL is available
 		this.shorteners = [ 'krzz.de', 'tinyurl.com', 'is.gd', 'bit.ly', 'j.mp', 'b23.ru', 'cort.as', 'korta.nu', 
-			'redir.ec', 'ipir.at', 'yep.it', 'chilp.it', 'migre.me', 'qlnk.net', 'togoto.us', 'url.ie' ];
+			'redir.ec', 'ipir.at', 'yep.it', 'chilp.it', 'migre.me', 'qlnk.net', 'togoto.us', 'url.ie', 'xrl.us',
+			'twurl.nl' ];
 	}
 
 	void set controller(Controller c) {

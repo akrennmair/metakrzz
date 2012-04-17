@@ -96,6 +96,19 @@ sub shorten_googl {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_twurlnl {
+	my ($ua, $url) = @_;
+	my $resp = $ua->post('http://tweetburner.com/links', { "link[url]" => $url });
+	if ($resp->is_success) {
+		my $result = $resp->decoded_content;
+		if ($result =~ /^http:/) {
+			return { "url" => $result };
+		}
+		return { "error" => $result };
+	}
+	return { "error" => $resp->status_line };
+}
+
 sub shorten_cortas {
 	my ($ua, $url) = @_;
 	my $json = JSON->new;
@@ -170,6 +183,11 @@ sub shorten_urlie {
 	return _shorten_text($ua, 'http://url.ie/site/api/tinyurl/create/?url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_xrlus {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://metamark.net/api/rest/simple?long_url=<url>', { url => uri_escape($url) });
+}
+
 sub shorten_qlnknet {
 	my ($ua, $url) = @_;
 	my $resp = $ua->get('http://qlnk.net/api.php?url=' . uri_escape($url));
@@ -200,6 +218,8 @@ my %shortener = (
 	'qlnk.net' => \&shorten_qlnknet,
 	'togoto.us' => \&shorten_togotous,
 	'url.ie' => \&shorten_urlie,
+	'xrl.us' => \&shorten_xrlus,
+	'twurl.nl' => \&shorten_twurlnl,
 );
 
 get '/' => sub {
