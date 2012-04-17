@@ -42,7 +42,7 @@ sub _shorten_text {
 	if ($resp->is_success) {
 		my $content = $resp->decoded_content;
 		chomp($content);
-		$content =~ s/^\s*(.*)\s*$/\1/g;
+		$content =~ s/^\s*(.*)\s*$/$1/g;
 		if ($content =~ /^http:\/\//) {
 			return { "url" => $content };
 		}
@@ -105,6 +105,21 @@ sub shorten_twurlnl {
 			return { "url" => $result };
 		}
 		return { "error" => $result };
+	}
+	return { "error" => $resp->status_line };
+}
+
+sub shorten_lnsnet {
+	my ($ua, $url) = @_;
+	my $resp = $ua->post('http://ln-s.net/home/api.jsp', { "url" => $url });
+	if ($resp->is_success) {
+		my $result = $resp->decoded_content;
+		1 while(chomp($result));
+		my ($errcode, $msg) = split(/ /, $result, 2);
+		if ($errcode eq "200") {
+			return { "url" => $msg };
+		}
+		return { "error" => $msg };
 	}
 	return { "error" => $resp->status_line };
 }
@@ -194,7 +209,7 @@ sub shorten_qlnknet {
 	if ($resp->is_success) {
 		my $content = $resp->decoded_content;
 		chomp($content);
-		$content =~ s/^\s*(.*)\s*$/\1/g;
+		$content =~ s/^\s*(.*)\s*$/$1/g;
 		return { "url" => "http://$content/" };
 	}
 	return { "error" => $resp->status_line };
@@ -220,6 +235,7 @@ my %shortener = (
 	'url.ie' => \&shorten_urlie,
 	'xrl.us' => \&shorten_xrlus,
 	'twurl.nl' => \&shorten_twurlnl,
+	'ln-s.net' => \&shorten_lnsnet,
 );
 
 get '/' => sub {
