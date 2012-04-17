@@ -203,6 +203,11 @@ sub shorten_xrlus {
 	return _shorten_text($ua, 'http://metamark.net/api/rest/simple?long_url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_merkyde {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://merky.de/api/?url=<url>&short=1', { url => uri_escape($url) });
+}
+
 sub shorten_qlnknet {
 	my ($ua, $url) = @_;
 	my $resp = $ua->get('http://qlnk.net/api.php?url=' . uri_escape($url));
@@ -236,6 +241,7 @@ my %shortener = (
 	'xrl.us' => \&shorten_xrlus,
 	'twurl.nl' => \&shorten_twurlnl,
 	'ln-s.net' => \&shorten_lnsnet,
+	'merky.de' => \&shorten_merkyde,
 );
 
 get '/' => sub {
