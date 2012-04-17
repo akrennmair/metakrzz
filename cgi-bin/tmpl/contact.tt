@@ -8,4 +8,7 @@
 <p>
 	<a class="btn" href="mailto:admin@krzz.de">Contact by E-Mail&nbsp;<i class="icon-envelope"></i></a>
 </p>
+<footer>
+<p>Built with <a href="https://github.com/akrennmair/metoo-pm">MeToo.pm</a>, <a href="http://www.dartlang.org/">Dart</a> and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.</p>
+</footer>
 </div>
