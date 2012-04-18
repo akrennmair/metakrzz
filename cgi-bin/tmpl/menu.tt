@@ -6,6 +6,10 @@
 				<li<% IF active == 'home' %> class="active"<% END %>><a href="/"><i class="icon-home icon-white"></i>Home</a></li>
 				<li<% IF active == 'contact' %> class="active"<% END %>><a href="/contact"><i class="icon-info-sign icon-white"></i>Contact / Impressum</a></li>
 			</ul>
+			<p class="navbar-text pull-right">
+				<a href="http://flattr.com/thing/634663/meta-krzz-de" target="_blank">
+				<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a>
+			</p>
 		</div>
 	</div>
 </div>
