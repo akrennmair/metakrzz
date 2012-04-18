@@ -220,6 +220,21 @@ sub shorten_qlnknet {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_b1tit {
+	my ($ua, $url) = @_;
+	my $resp = $ua->post('http://b1t.it/', { "url" => $url });
+	if ($resp->is_success) {
+		my $json = JSON->new;
+		my $result = $json->decode($resp->decoded_content);
+		my $short_url = $result->{url};
+		if ($short_url) {
+			return { "url" => $short_url };
+		}
+		return { "error" => $resp->decoded_content };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz.de' => \&shorten_krzz,
 	'goo.gl' => \&shorten_googl,
@@ -242,6 +257,7 @@ my %shortener = (
 	'twurl.nl' => \&shorten_twurlnl,
 	'ln-s.net' => \&shorten_lnsnet,
 	'merky.de' => \&shorten_merkyde,
+	'b1t.it' => \&shorten_b1tit,
 );
 
 get '/' => sub {
