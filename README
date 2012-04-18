@@ -1,0 +1,21 @@
+README
+======
+
+This is the source code that runs the meta.krzz.de website. meta.krzz.de is a 
+meta URL shortener: you can shorten a URL, and your URL will be sent to a number 
+of different URL shorteners. As soon as the shortened URL arrive, they will be 
+displayed.
+
+meta.krzz.de is built with the following pieces of software:
+- MeToo.pm https://github.com/akrennmair/metoo-pm
+- Bootstrap http://twitter.github.com/bootstrap/
+- Dart http://www.dartlang.org/
+
+The research result about the APIs of the different URL shorteners was 
+documented here: https://stratum0.org/mediawiki/index.php/UrlShorteners
+
+Author
+======
+Andreas Krennmair <ak@synflood.at>
+
+Thanks go out to Sven Guckes for documenting all the URL shorteners!
