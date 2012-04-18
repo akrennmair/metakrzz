@@ -1,9 +1,8 @@
 <% INCLUDE header.tt title = "meta.krzz.de | Home" %>
 <% INCLUDE menu.tt active = 'home' %>
 <div class="container">
-<h2>meta.krzz.de Meta URL Shortener</h2>
 <div class="row">
-	<div class="span12">
+	<div class="span6">
 		<form action="" method="post" class="well">
 		<input id=url name=url type=url placeholder="URL, e.g. http://example.com/" required autofocus class="input-medium" style="width: 100%">
 		<button id=btn class="btn btn-primary" type=submit>Shorten</button>
@@ -12,6 +11,16 @@
 			<img src="/files/img/indicator.gif">
 		</label>
 		</form>
+	</div>
+	<div class="span6">
+	<p>
+		<a href="/">meta.krzz.de</a> is a meta URL shortener. Just enter the URL you want to shorten in the form on the left and press "Shorten", and your
+		URL will be submitted to many URL shortener in parallel. As the shortened URLs arrive, they will displayed in a table below. Share
+		and enjoy!
+	</p>
+	<p>
+		If you know of a URL shortener that you would like to see supported, <a href="/contact">don't hesitate to contact us</a>!
+	</p>
 	</div>
 </div>
 <div class="row">
