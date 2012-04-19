@@ -235,6 +235,21 @@ sub shorten_b1tit {
 	return { "error" => $resp->status_line };
 }
 
+sub shorten_7ly {
+	my ($ua, $url) = @_;
+	my $resp = $ua->get('http://7.ly/api/short?longurl=' . uri_escape($url));
+	if ($resp->is_success) {
+		my $json = JSON->new;
+		my $result = $json->decode($resp->decoded_content);
+		my $short_url = $result->{url};
+		if ($short_url) {
+			return { "url" => $short_url };
+		}
+		return { "error" => $result->{error}{msg} };
+	}
+	return { "error" => $resp->status_line };
+}
+
 my %shortener = (
 	'krzz.de' => \&shorten_krzz,
 	'goo.gl' => \&shorten_googl,
@@ -258,6 +273,7 @@ my %shortener = (
 	'ln-s.net' => \&shorten_lnsnet,
 	'merky.de' => \&shorten_merkyde,
 	'b1t.it' => \&shorten_b1tit,
+	'7.ly' => \&shorten_7ly,
 );
 
 get '/' => sub {
