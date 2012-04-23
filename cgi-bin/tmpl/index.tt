@@ -24,7 +24,7 @@
 	</div>
 </div>
 <div class="row">
-	<div id="errmsgbox" class="alert alert-error span4" style="display: none"></div>
+	<div id="errmsgbox" class="alert alert-error span12" style="display: none"></div>
 </div>
 <div class="row">
 	<table class="table table-bordered table-striped table-condensed span12" id="urltbl" style="display: none">
