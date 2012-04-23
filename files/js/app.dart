@@ -125,6 +125,10 @@ class UI {
 		document.query('#errmsgclose').on.click.add( (e) => errmsg.style.display = "none" );
 	}
 
+	void hideError() {
+		document.query('#errmsgbox').style.display = 'none';
+	}
+
 	void receivedResult() {
 		this.received_results++;
 
@@ -135,6 +139,8 @@ class UI {
 	}
 
 	void buttonClicked() {
+		this.hideError();
+
 		InputElement url_input = document.query('#url');
 		if (!url_input.checkValidity()) {
 			this.showError("Invalid URL");
