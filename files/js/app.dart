@@ -142,8 +142,11 @@ class UI {
 		this.hideError();
 
 		InputElement url_input = document.query('#url');
-		if (!url_input.checkValidity()) {
-			this.showError("Invalid URL");
+		String url = url_input.value;
+
+		if (!url.startsWith("http://") && !url.startsWith("https://")) {
+			url_input.value = "http://" + url;
+			this.showError("Invalid URL. Did you mean to start it with &quot;http://&quot;?");
 			return;
 		}
 
@@ -161,8 +164,6 @@ class UI {
 		for (int i=tbl.rows.length-1;i>0;i--) {
 			tbl.deleteRow(i);
 		}
-
-		String url = url_input.value;
 
 		this.ctrl.shorten(url);
 	}
