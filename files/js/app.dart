@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:json';
+import 'dart:json' as JSON;
 
 class Shortener {
 	Controller ctrl;
@@ -38,14 +38,14 @@ class ShortenerRequest {
 
 	void run() {
 		HttpRequest xhr = new HttpRequest();
-		xhr.open("GET", "/shorten/" + this.id + "?url=" + this.url, true);
+		xhr.open("GET", "/shorten/${this.id}?url=${this.url}", true);
 
 		xhr.on.load.add((event) {
 			print("got load for $id");
 			this.ctrl.receivedResult();
 			if (xhr.status != 200) {
-				print("error: " + xhr.responseText);
-				this.ctrl.showURLError(this.id, "shortener returned " + xhr.status);
+				print("error: ${xhr.responseText}");
+				this.ctrl.showURLError(this.id, "shortener returned ${xhr.status}");
 				return;
 			}
 			Map<String, Object> msg = JSON.parse(xhr.responseText);
@@ -145,7 +145,7 @@ class UI {
 		String url = url_input.value;
 
 		if (!url.startsWith("http://") && !url.startsWith("https://")) {
-			url_input.value = "http://" + url;
+			url_input.value = "http://${url}";
 			this.showError("Invalid URL. Did you mean to start it with &quot;http://&quot;?");
 			return;
 		}
@@ -208,11 +208,8 @@ void main() {
 	ctrl.ui = ui;
 	ctrl.shortener = sh;
 
-	window.on.contentLoaded.add( (e) {
-			document.query('#btn').on.click.add( (event) {
-				event.preventDefault();
-				ui.buttonClicked();
-			});
-		}
-	);
+	document.query('#btn').on.click.add( (event) {
+		event.preventDefault();
+		ui.buttonClicked();
+	});
 }
