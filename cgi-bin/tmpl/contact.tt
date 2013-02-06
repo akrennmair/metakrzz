@@ -2,9 +2,9 @@
 <% INCLUDE menu.tt active = 'contact' %>
 <div class="container">
 <h2>Contact / Impressum</h2>
-<p>
+<address>
 	Andreas Krennmair<br>Erasmusstr. 1<br>10553 Berlin, DE
-</p>
+</address>
 <p>
 	<a class="btn" href="mailto:admin@krzz.de">Contact by E-Mail&nbsp;<i class="icon-envelope"></i></a>
 </p>
