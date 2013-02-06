@@ -11,7 +11,8 @@ body {
 }
 </style>
 <title><% title %></title>
-<script src="/files/js/app.dart.js"></script>
+<script type="application/dart" src="/files/js/app.dart"></script>
+<script src="/files/js/lib/dart.js"></script>
 <!--[if lt IE 9]>
 <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
