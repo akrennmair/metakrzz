@@ -5,7 +5,7 @@ JS_SRC=$(DART_SRC).js
 all: $(JS_SRC)
 
 $(JS_SRC): $(DART_SRC)
-	$$DART_SDK/bin/frogc --enable_type_checks $<
+	$$DART_SDK/bin/dart2js -o$@ $<
 	yui-compressor --line-break 120 -o $@ $@ || true
 
 deploy:

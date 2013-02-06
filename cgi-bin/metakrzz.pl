@@ -96,19 +96,6 @@ sub shorten_googl {
 	return { "error" => $resp->status_line };
 }
 
-sub shorten_twurlnl {
-	my ($ua, $url) = @_;
-	my $resp = $ua->post('http://tweetburner.com/links', { "link[url]" => $url });
-	if ($resp->is_success) {
-		my $result = $resp->decoded_content;
-		if ($result =~ /^http:/) {
-			return { "url" => $result };
-		}
-		return { "error" => $result };
-	}
-	return { "error" => $resp->status_line };
-}
-
 sub shorten_lnsnet {
 	my ($ua, $url) = @_;
 	my $resp = $ua->post('http://ln-s.net/home/api.jsp', { "url" => $url });
@@ -173,6 +160,11 @@ sub shorten_ipirat {
 	return _shorten_text($ua, 'http://ipir.at/yourls-api.php?action=shorturl&format=txt&url=<url>', { url => uri_escape($url) });
 }
 
+sub shorten_unurlorg {
+	my ($ua, $url) = @_;
+	return _shorten_text($ua, 'http://unurl.org/yourls-api.php?action=shorturl&format=simple&url=<url>', { url => uri_escape($url) });
+}
+
 sub shorten_yepit {
 	my ($ua, $url) = @_;
 	return _shorten_text($ua, 'http://yep.it/api.php?url=<url>', { url => uri_escape($url) });
@@ -186,11 +178,6 @@ sub shorten_chilpit {
 sub shorten_migreme {
 	my ($ua, $url) = @_;
 	return _shorten_text($ua, 'http://migre.me/api.txt?url=<url>', { url => uri_escape($url) });
-}
-
-sub shorten_togotous {
-	my ($ua, $url) = @_;
-	return _shorten_text($ua, 'http://togoto.us/api.php?u=<url>', { url => uri_escape($url) });
 }
 
 sub shorten_urlie {
@@ -235,21 +222,6 @@ sub shorten_b1tit {
 	return { "error" => $resp->status_line };
 }
 
-sub shorten_7ly {
-	my ($ua, $url) = @_;
-	my $resp = $ua->get('http://7.ly/api/short?longurl=' . uri_escape($url));
-	if ($resp->is_success) {
-		my $json = JSON->new;
-		my $result = $json->decode($resp->decoded_content);
-		my $short_url = $result->{url};
-		if ($short_url) {
-			return { "url" => $short_url };
-		}
-		return { "error" => $result->{error}{msg} };
-	}
-	return { "error" => $resp->status_line };
-}
-
 my %shortener = (
 	'krzz.de' => \&shorten_krzz,
 	'goo.gl' => \&shorten_googl,
@@ -266,14 +238,12 @@ my %shortener = (
 	'chilp.it' => \&shorten_chilpit,
 	'migre.me' => \&shorten_migreme,
 	'qlnk.net' => \&shorten_qlnknet,
-	'togoto.us' => \&shorten_togotous,
 	'url.ie' => \&shorten_urlie,
 	'xrl.us' => \&shorten_xrlus,
-	'twurl.nl' => \&shorten_twurlnl,
 	'ln-s.net' => \&shorten_lnsnet,
 	'merky.de' => \&shorten_merkyde,
 	'b1t.it' => \&shorten_b1tit,
-	'7.ly' => \&shorten_7ly,
+	'unurl.org' => \&shorten_unurlorg,
 );
 
 get '/' => sub {
